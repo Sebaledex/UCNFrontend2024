@@ -8,7 +8,7 @@ import { AuthResponse } from "../../infrastructure/interfaces/auth.responses";
   const returnUserToken = ( data: AuthResponse ) => {
 
     const user: User = {
-      id: data.user_id,
+      id: data.userId,
       //rol1: data.user_role,
       name: data.name,
       username: data.username,
@@ -18,7 +18,8 @@ import { AuthResponse } from "../../infrastructure/interfaces/auth.responses";
     return {
       user: user,
       access_token: data.access_token,
-      user_id: data.user_id,
+      refresh_token: data.refresh_token,
+      user_id: data.userId,
     }
   }
   
@@ -55,5 +56,19 @@ export const authLogin = async (username: string, password: string) => {
       console.log(error);
       return null;
     }
+  };
 
+  export const authRefreshToken = async (refresh_token: string) => {
+    try {
+      const { data } = await serviceAxiosApi.post<AuthResponse>('/v2/auth/refresh-token', {
+        refreshToken: refresh_token,
+      });
+      console.log({ data });
+  
+      return returnUserToken(data);
+    } catch (error) {
+      const err = error as any;
+      console.log('Error en authRefreshToken:', err.response ? err.response.data : err.message);
+      return null;
+    }
   };

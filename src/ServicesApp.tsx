@@ -39,9 +39,6 @@ export const ServicesApp = () => {
                     <StackNavigator />
 
             </NavigationContainer>
-                <NavigationContainer>
-                    <StackNavigator />
-                </NavigationContainer>
         </ApplicationProvider>
         </>
     )
