@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { Button, Icon, Layout, Text, Spinner } from '@ui-kitten/components';
 import { useAuthStore } from '../../store/auth/useAuthStore';
 import { Alert } from 'react-native';
-import { RootStackParams } from '../../navigation/StackNavigator';
+import { useNavigation } from '@react-navigation/native';
 
 export const HomeScreen = () => {
-  const { access_token, refresh_token, refresh, logout } = useAuthStore(); // Accediendo a access_token, refresh_token y métodos
+  const { access_token, refresh_token, refresh, logout } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
 
   const handleVerifyTokens = async () => {
     setLoading(true);
@@ -14,17 +15,28 @@ export const HomeScreen = () => {
     setLoading(false);
 
     if (success) {
-      Alert.alert('Tokens encontrados y cuenta iniciada automáticamente.');
+      Alert.alert('Tokens validados y cuenta iniciada automáticamente.');
     } else {
       Alert.alert('No se pudieron encontrar los tokens, por favor inicie sesión.');
     }
   };
 
   const handleLogout = () => {
-    // Aquí puedes llamar a tu función de logout del store
-    logout(); // Asegúrate de implementar esta función en tu store
+    logout();
     Alert.alert('Sesión cerrada.');
+
+    // Navegar a la pantalla "CheckingScreen" después del logout
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'CheckingScreen' }],
+    });
   };
+
+  const navigateToCheckingScreen = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'CheckingScreen' }],
+    });  };
 
   return (
     <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -32,7 +44,7 @@ export const HomeScreen = () => {
 
       {/* Mostrar access_token */}
       <Text style={{ marginVertical: 10 }}>
-        Access Token: {access_token ? access_token : 'No token available'}
+        Access Token: {access_token ? access_token : 'No access token available'}
       </Text>
 
       {/* Mostrar refresh_token */}
@@ -52,11 +64,21 @@ export const HomeScreen = () => {
 
       {/* Botón para cerrar sesión */}
       <Button 
+        style={{ marginVertical: 10 }}
         accessoryLeft={<Icon name="log-out-outline" />}
         onPress={handleLogout} // Maneja el cierre de sesión
         disabled={loading} // Deshabilitar si está cargando
       >
         Cerrar sesión
+      </Button>
+
+      {/* Nuevo botón para navegar a CheckingScreen */}
+      <Button
+        style={{ marginVertical: 10 }}
+        onPress={navigateToCheckingScreen}
+        accessoryLeft={<Icon name="navigation-outline" />}
+      >
+        Ir a CheckingScreen
       </Button>
     </Layout>
   );
