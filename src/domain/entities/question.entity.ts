@@ -8,10 +8,12 @@ export interface Question {
   }
   
   export interface Pregunta {
+    numero: number;
     pregunta: string;
     tipo: 'abierta' | 'multiple' | 'escala';
     opciones?: string[];
-    respuestaEscala?: number;
-    respuestaAbierta?: string;
+    //respuestaEscala?: number;
+   // respuestaAbierta?: string;
+    respuestaSeleccionada?: string;
   }
   

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { getAllQuestions, getQuestionById } from "../../actions/question";
+import { answerQuestion, getAllQuestions, getQuestionById } from "../../actions/question";
 import { Question } from "../../domain/entities/question.entity";
 
 
@@ -10,6 +10,7 @@ interface QuestionState {
     error: string | null;
     fetchAllQuestions: () => Promise<void>;
     fetchQuestionById: (id: string) => Promise<void>; // Función para obtener un cuestionario específico
+    submitAnswer: (questionId: string, numeroPregunta: number, respuesta: string) => Promise<void>;
 }
 
 export const useQuestionStore = create<QuestionState>((set) => ({
@@ -31,6 +32,15 @@ export const useQuestionStore = create<QuestionState>((set) => ({
         try {
             const selectedQuestion = await getQuestionById(id);
             set({ selectedQuestion, error: null });
+        } catch (error) {
+            set({ error: (error as Error).message });
+        }
+    },
+
+    submitAnswer: async (questionId, numeroPregunta, respuesta) => {
+        try {
+            await answerQuestion(questionId, numeroPregunta, respuesta);
+            set({ error: null });
         } catch (error) {
             set({ error: (error as Error).message });
         }

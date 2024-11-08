@@ -20,3 +20,26 @@ export const getAllQuestions = async (): Promise<Question[]> => {
       throw error;
     }
   };
+
+  export const answerQuestion = async (
+    questionId: string,
+    numeroPregunta: number,
+    respuesta: string
+): Promise<void> => {
+    try {
+        // Aquí imprimimos los datos antes de hacer la solicitud
+        console.log('Enviando a endpoint:', `/v2/question/${questionId}/answer`);
+        console.log('Datos a enviar:', {
+            numeroPregunta,
+            respuesta,
+        });
+
+        await serviceAxiosApi.patch(`/v2/question/${questionId}/answer`, {
+            numeroPregunta,
+            respuesta,
+        });
+    } catch (error) {
+        console.error('Error al enviar la respuesta:', error);
+        throw error;
+    }
+};

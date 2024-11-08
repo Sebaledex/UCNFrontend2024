@@ -1,15 +1,22 @@
-import React, { useEffect } from 'react';
-import { Layout, Text, Spinner, Button, Card, Divider } from '@ui-kitten/components';
-import { FlatList, StyleSheet, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Layout, Text, Spinner, Button, Card, Divider, Modal } from '@ui-kitten/components';
+import { Alert, Dimensions, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useNavigation, NavigationProp, useRoute } from '@react-navigation/native';
 import { RootStackParams } from '../../navigation/StackNavigator';
 import { useQuestionStore } from '../../store/useQuestionStore';
+import Carousel from 'react-native-snap-carousel';
+import { answerQuestion } from '../../../actions/question';
+
+const screenWidth = Dimensions.get('window').width;
 
 export const QuestionDetailScreen = () => {
-  const { fetchQuestionById, selectedQuestion, error } = useQuestionStore();
-  const navigation = useNavigation<NavigationProp<RootStackParams>>();
+  const { fetchQuestionById, selectedQuestion, error, submitAnswer } = useQuestionStore();
+  const navigation = useNavigation();
   const route = useRoute();
   const { id } = route.params as { id: string };
+  const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({});
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number | null>(null);
+  const [sendingAnswers, setSendingAnswers] = useState<boolean>(false);
 
   useEffect(() => {
     fetchQuestionById(id);
@@ -19,7 +26,6 @@ export const QuestionDetailScreen = () => {
     return (
       <Layout style={styles.centered}>
         <Text status="danger">{error}</Text>
-        <Button onPress={() => navigation.goBack()}>Volver</Button>
       </Layout>
     );
   }
@@ -32,23 +38,65 @@ export const QuestionDetailScreen = () => {
     );
   }
 
+  const totalQuestions = selectedQuestion.cuestionario.length;
+  const answeredQuestionsCount = Object.keys(selectedAnswers).length;
+  const allQuestionsAnswered = totalQuestions === answeredQuestionsCount;
+
+  const handleOptionSelect = (questionIndex: number, option: string) => {
+    setSelectedAnswers(prev => ({
+      ...prev,
+      [questionIndex]: option,
+    }));
+    setCurrentQuestionIndex(questionIndex);
+  };
+
+  const handleSendAllAnswers = async () => {
+    setSendingAnswers(true);
+    try {
+      for (let i = 0; i < selectedQuestion.cuestionario.length; i++) {
+        if (selectedAnswers[i] !== undefined) {
+          const numeroPregunta = i + 1;
+          const respuesta = selectedAnswers[i];
+          await submitAnswer(id, numeroPregunta, respuesta);
+        }
+      }
+      Alert.alert('Éxito', 'Todas las respuestas se enviaron correctamente');
+      navigation.goBack(); // Redirige a la pantalla de preguntas
+    } catch (error) {
+      console.error('Error al enviar las respuestas:', error);
+      Alert.alert('Error', 'Hubo un problema al enviar las respuestas');
+    } finally {
+      setSendingAnswers(false);
+    }
+  };
+
   const renderQuestionItem = ({ item, index }: { item: any; index: number }) => (
-    <View key={index} style={styles.questionContainer}>
-      <Text style={styles.questionText}>Pregunta: {item.pregunta}</Text>
-      {item.tipo === 'multiple' && (
-        <View style={styles.optionContainer}>
-          {item.opciones?.map((opcion: string, i: number) => (
-            <Text key={i} style={styles.optionText}>Opción: {opcion}</Text>
-          ))}
-        </View>
+    <View style={[styles.questionWrapper, { width: screenWidth }]}>
+      <Card style={styles.card}>
+        <Text style={styles.boldText}>Pregunta {item.numero}</Text>
+        <Text style={styles.questionText}>{item.pregunta}</Text>
+        {item.opciones?.map((opcion: string, i: number) => (
+          <TouchableOpacity
+            key={i}
+            style={styles.optionContainer}
+            onPress={() => handleOptionSelect(index, opcion)}
+          >
+            <View style={[
+              styles.selectionIndicator,
+              selectedAnswers[index] === opcion && styles.selected,
+            ]} />
+            <Text style={styles.optionText}>{opcion}</Text>
+          </TouchableOpacity>
+        ))}
+      </Card>
+      <Text style={styles.progressText}>
+        Preguntas respondidas: {answeredQuestionsCount}/{totalQuestions}
+      </Text>
+      {allQuestionsAnswered && (
+        <Button style={styles.sendButton} onPress={handleSendAllAnswers} disabled={sendingAnswers}>
+          {sendingAnswers ? 'Enviando...' : 'Enviar Respuestas'}
+        </Button>
       )}
-      {item.tipo === 'escala' && item.respuestaEscala !== undefined && (
-        <Text>Respuesta Escala: {item.respuestaEscala}</Text>
-      )}
-      {item.tipo === 'abierta' && item.respuestaAbierta !== undefined && (
-        <Text>Respuesta Abierta: {item.respuestaAbierta}</Text>
-      )}
-      <Divider style={styles.divider} />
     </View>
   );
 
@@ -56,24 +104,12 @@ export const QuestionDetailScreen = () => {
     <Layout style={styles.container}>
       <FlatList
         data={selectedQuestion.cuestionario}
-        keyExtractor={(item, index) => index.toString()}
-        ListHeaderComponent={
-          <Card style={styles.card}>
-            <Text style={styles.title}>{selectedQuestion.nombre}</Text>
-            <Text style={styles.description}>{selectedQuestion.descripcion}</Text>
-            <View style={styles.photoContainer}>
-              {selectedQuestion.fotos.map((foto, index) => (
-                <Text key={index}>Foto: {foto}</Text>
-              ))}
-            </View>
-          </Card>
-        }
         renderItem={renderQuestionItem}
-        contentContainerStyle={{ paddingBottom: 100 }} // Espacio para el botón
+        horizontal
+        pagingEnabled
+        keyExtractor={(item, index) => index.toString()}
+        showsHorizontalScrollIndicator={false}
       />
-      <Button style={styles.floatingButton} onPress={() => navigation.goBack()}>
-        Volver
-      </Button>
     </Layout>
   );
 };
@@ -81,52 +117,60 @@ export const QuestionDetailScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-  },
-  card: {
-    marginBottom: 8,
-    padding: 16,
-    borderRadius: 8,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  description: {
-    marginBottom: 8,
+    backgroundColor: '#F7F9FC',
   },
   centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  photoContainer: {
-    marginVertical: 8,
+  questionWrapper: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
   },
-  questionContainer: {
-    marginVertical: 8,
+  card: {
+    padding: 16,
+    borderRadius: 8,
+    width: '80%',
+    alignItems: 'center',
+  },
+  boldText: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 4,
+    textAlign: 'center',
   },
   questionText: {
-    fontWeight: 'bold',
-    marginBottom: 4,
+    fontSize: 16,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   optionContainer: {
-    marginLeft: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 4,
   },
   optionText: {
     fontStyle: 'italic',
+    marginLeft: 8,
   },
-  floatingButton: {
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: '#3366FF',
-    borderRadius: 8,
-    elevation: 5,
+  selectionIndicator: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'gray',
   },
-  divider: {
-    marginVertical: 8,
+  selected: {
+    backgroundColor: 'blue',
+  },
+  sendButton: {
+    marginTop: 16,
+  },
+  progressText: {
+    marginTop: 8,
+    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });
