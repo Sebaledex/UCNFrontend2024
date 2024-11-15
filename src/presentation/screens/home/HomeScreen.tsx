@@ -33,6 +33,21 @@ export const HomeScreen = () => {
     });
   };
 
+  const navigateToAnswerAllScreen = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'AnswerAllScreen' }],
+    });
+  };
+
+  const navigateToQuestionRecordScreen = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'QuestionRecordScreen' }],
+    });
+  };
+
+
   return (
     <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text category='h1'>HomeScreen</Text>
@@ -52,6 +67,22 @@ export const HomeScreen = () => {
         accessoryLeft={<Icon name="question-mark-circle-outline" />}
       >
         Ir a Tokens Screen
+      </Button>
+
+      <Button
+        style={{ marginVertical: 10 }}
+        onPress={navigateToAnswerAllScreen}
+        accessoryLeft={<Icon name="question-mark-circle-outline" />}
+      >
+        Ir a Answer All Screen
+      </Button>
+
+      <Button
+        style={{ marginVertical: 10 }}
+        onPress={navigateToQuestionRecordScreen}
+        accessoryLeft={<Icon name="question-mark-circle-outline" />}
+      >
+        Ir a Question Record Screen
       </Button>
 
       <Button 

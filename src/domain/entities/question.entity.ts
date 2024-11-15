@@ -14,6 +14,6 @@ export interface Question {
     opciones?: string[];
     //respuestaEscala?: number;
    // respuestaAbierta?: string;
-    respuestaSeleccionada?: string;
+    //respuestaSeleccionada?: string;
   }
   

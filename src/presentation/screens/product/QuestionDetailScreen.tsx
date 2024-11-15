@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Text, Spinner, Button, Card, Divider, Modal } from '@ui-kitten/components';
+import { Layout, Text, Spinner, Button, Card, Divider } from '@ui-kitten/components';
 import { Alert, Dimensions, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useNavigation, NavigationProp, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, NavigationProp } from '@react-navigation/native';
 import { RootStackParams } from '../../navigation/StackNavigator';
 import { useQuestionStore } from '../../store/useQuestionStore';
-import Carousel from 'react-native-snap-carousel';
-import { answerQuestion } from '../../../actions/question';
+import { useRespuestaStore } from '../../store/useRespuestaStore';
+import { useAuthStore } from '../../store/auth/useAuthStore';
+  // Importa el store de autenticación
 
 const screenWidth = Dimensions.get('window').width;
 
 export const QuestionDetailScreen = () => {
-  const { fetchQuestionById, selectedQuestion, error, submitAnswer } = useQuestionStore();
-  const navigation = useNavigation();
+  const { fetchQuestionById, selectedQuestion, error } = useQuestionStore();
+  const { submitResponse } = useRespuestaStore();
+  const { user, status } = useAuthStore();  // Obtén el estado de autenticación
+  const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const route = useRoute();
-  const { id } = route.params as { id: string };
+  const { id } = route.params as { id: string }; // ID del cuestionario
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({});
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number | null>(null);
-  const [sendingAnswers, setSendingAnswers] = useState<boolean>(false);
+  const [sendingAnswers, setSendingAnswers] = useState(false);
 
   useEffect(() => {
     fetchQuestionById(id);
@@ -43,25 +45,29 @@ export const QuestionDetailScreen = () => {
   const allQuestionsAnswered = totalQuestions === answeredQuestionsCount;
 
   const handleOptionSelect = (questionIndex: number, option: string) => {
-    setSelectedAnswers(prev => ({
+    setSelectedAnswers((prev) => ({
       ...prev,
       [questionIndex]: option,
     }));
-    setCurrentQuestionIndex(questionIndex);
   };
 
   const handleSendAllAnswers = async () => {
     setSendingAnswers(true);
     try {
-      for (let i = 0; i < selectedQuestion.cuestionario.length; i++) {
-        if (selectedAnswers[i] !== undefined) {
-          const numeroPregunta = i + 1;
-          const respuesta = selectedAnswers[i];
-          await submitAnswer(id, numeroPregunta, respuesta);
-        }
+      const respuestas = Object.keys(selectedAnswers).map((key) => ({
+        numero: parseInt(key, 10) + 1,
+        respuestaSeleccionada: selectedAnswers[parseInt(key, 10)],
+      }));
+
+      if (!user) {
+        Alert.alert('Error', 'No se encontró el usuario. Inicia sesión nuevamente.');
+        return;
       }
+
+      await submitResponse(user.id, id, respuestas);  // Usa user.id en vez de userId
+
       Alert.alert('Éxito', 'Todas las respuestas se enviaron correctamente');
-      navigation.goBack(); // Redirige a la pantalla de preguntas
+      navigation.goBack(); // Redirige a la pantalla de cuestionarios
     } catch (error) {
       console.error('Error al enviar las respuestas:', error);
       Alert.alert('Error', 'Hubo un problema al enviar las respuestas');
@@ -81,10 +87,12 @@ export const QuestionDetailScreen = () => {
             style={styles.optionContainer}
             onPress={() => handleOptionSelect(index, opcion)}
           >
-            <View style={[
-              styles.selectionIndicator,
-              selectedAnswers[index] === opcion && styles.selected,
-            ]} />
+            <View
+              style={[
+                styles.selectionIndicator,
+                selectedAnswers[index] === opcion && styles.selected,
+              ]}
+            />
             <Text style={styles.optionText}>{opcion}</Text>
           </TouchableOpacity>
         ))}
