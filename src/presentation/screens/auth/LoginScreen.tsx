@@ -6,7 +6,6 @@ import { RootStackParams } from "../../navigation/StackNavigator";
 import { useAuthStore } from "../../store/auth/useAuthStore";
 import { MyIcon } from "../../components/ui/MyIcon";
 
-
 interface Props extends StackScreenProps<RootStackParams, "LoginScreen"> {}
 
 export const LoginScreen = ({ navigation }: Props) => {
@@ -16,14 +15,13 @@ export const LoginScreen = ({ navigation }: Props) => {
     username: "",
     password: "",
   });
-  const [otherButtonsEnabled, setOtherButtonsEnabled] = useState<boolean>(true); // Estado para habilitar/deshabilitar otros botones
+  const [otherButtonsEnabled, setOtherButtonsEnabled] = useState<boolean>(true);
 
   const { height } = useWindowDimensions();
 
-  // Agregar useEffect para limpiar los campos del formulario cuando la pantalla gana foco
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      setForm({ username: '', password: '' });
+    const unsubscribe = navigation.addListener("focus", () => {
+      setForm({ username: "", password: "" });
     });
 
     return unsubscribe;
@@ -31,27 +29,41 @@ export const LoginScreen = ({ navigation }: Props) => {
 
   const onLogin = async () => {
     try {
-      setLoading(true);
-      setOtherButtonsEnabled(false); // Deshabilitar los otros botones al iniciar sesión
       if (form.username.length === 0 || form.password.length === 0) {
         Alert.alert("Error", "Ingrese información");
-        setLoading(false); // Asegurarse de detener la carga y habilitar los botones
-        setOtherButtonsEnabled(true);
         return;
       }
 
+      setLoading(true);
+      setOtherButtonsEnabled(false);
+
+      // Configurar temporizador de 4 segundos
+      const timeoutId = setTimeout(() => {
+        if (loading) {
+          setLoading(false);
+          setOtherButtonsEnabled(true);
+          Alert.alert("Error", "Usuario o contraseña incorrectos. Intente nuevamente.");
+        }
+      }, 4000);
+
       const wasSuccessful = await login(form.username, form.password);
+
+      // Limpiar temporizador si el login fue exitoso antes de los 4 segundos
+      clearTimeout(timeoutId);
+
       if (wasSuccessful) {
+        setLoading(false);
+        setOtherButtonsEnabled(true);
         navigation.navigate("HomeScreen");
-        return;
+      } else {
+        Alert.alert("Error", "Usuario o contraseña incorrectos");
       }
-      Alert.alert("Error", "Usuario o contraseña incorrectos");
     } catch (error) {
       console.error(error);
       Alert.alert("Error", "Ha ocurrido un error al iniciar sesión");
     } finally {
       setLoading(false);
-      setOtherButtonsEnabled(true); // Habilitar los otros botones al finalizar la operación de inicio de sesión
+      setOtherButtonsEnabled(true);
     }
   };
 
@@ -84,10 +96,10 @@ export const LoginScreen = ({ navigation }: Props) => {
           />
         </Layout>
 
-        {/* Space */}
+        {/* Espacio */}
         <Layout style={{ height: 10 }} />
 
-        {/* Button */}
+        {/* Botón */}
         <Layout>
           <Button
             accessoryRight={
@@ -100,9 +112,8 @@ export const LoginScreen = ({ navigation }: Props) => {
           </Button>
         </Layout>
 
-        {/* Información para crear cuenta */}
+        {/* Información adicional */}
         <Layout style={{ height: 50 }} />
-
         <Layout
           style={{
             alignItems: "flex-end",
@@ -110,18 +121,17 @@ export const LoginScreen = ({ navigation }: Props) => {
             justifyContent: "center",
           }}
         >
-          <Text>¿No tienes cuenta?</Text>
+         {/* <Text>¿No tienes cuenta?</Text>
           <Text
             status="primary"
             category="s1"
-            onPress={() => otherButtonsEnabled && navigation.navigate("RegisterScreen")} // Agregar lógica de habilitación/deshabilitación
+            onPress={() => otherButtonsEnabled && navigation.navigate("RegisterScreen")}
           >
             {" "}
-            crea una{" "}
-          </Text>
+            Crea una{" "}
+          </Text>*/}
         </Layout>
 
-        {/* Información para cambiar contraseña */}
         <Layout style={{ height: 50 }} />
         <Layout
           style={{
@@ -130,17 +140,15 @@ export const LoginScreen = ({ navigation }: Props) => {
             justifyContent: "center",
           }}
         >
-          <Text>¿Olvidaste tu contraseña?</Text>
+          {/*<Text>¿Olvidaste tu contraseña?</Text>
           <Text
             status="primary"
-            category="s1"
-            onPress={() => otherButtonsEnabled && navigation.navigate("RegisterScreen")} 
+            //category="s1"
             //onPress={() => otherButtonsEnabled && navigation.navigate("ChangePassword")}
-            // Agregar lógica de habilitación/deshabilitación
           >
             {" "}
             Cambiar contraseña{" "}
-          </Text>
+          </Text>*/}
         </Layout>
       </ScrollView>
     </Layout>
