@@ -5,15 +5,19 @@ import { useRespuestaStore } from '../../store/useRespuestaStore';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { RootStackParams } from '../../navigation/StackNavigator';
 import { Respuesta } from '../../../domain/entities/respuesta.entity';
+import { useAuthStore } from '../../store/auth/useAuthStore';
+import { useQuestionStore } from '../../store/useQuestionStore';
 
 export const AnswerAllScreen = () => {
   const { responses, fetchAllResponses, error } = useRespuestaStore();
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
+  const { user, status } = useAuthStore();
+  const {question, fetchQuestionById} = useQuestionStore();
 
   useEffect(() => {
-    fetchAllResponses(); // Llama a la función para obtener todas las respuestas
+    fetchAllResponses();
   }, []);
-
+  let filteredResponses = responses.filter((respuesta) => respuesta.user_id === user?.id);
   if (error) {
     return (
       <Layout style={styles.centered}>
@@ -49,7 +53,7 @@ export const AnswerAllScreen = () => {
   return (
     <Layout style={styles.container}>
       <FlatList
-        data={responses}
+        data={filteredResponses}
         keyExtractor={(item) => item._id}
         renderItem={renderResponseItem}
         ItemSeparatorComponent={() => <Divider />}

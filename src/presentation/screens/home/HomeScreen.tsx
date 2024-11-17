@@ -26,12 +26,6 @@ export const HomeScreen = () => {
     });
   };
 
-  const navigateToTokensScreen = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'TokensScreen' }],
-    });
-  };
 
   const navigateToAnswerAllScreen = () => {
     navigation.reset({
@@ -58,15 +52,7 @@ export const HomeScreen = () => {
         onPress={navigateToQuestionScreen}
         accessoryLeft={<Icon name="question-mark-circle-outline" />}
       >
-        Ir a Lista de cuestionario 
-      </Button>
-
-      <Button
-        style={{ marginVertical: 10 }}
-        onPress={navigateToTokensScreen}
-        accessoryLeft={<Icon name="question-mark-circle-outline" />}
-      >
-        Ir a Tokens Screen
+        Ir a Responder cuestionario 
       </Button>
 
       <Button
@@ -74,7 +60,7 @@ export const HomeScreen = () => {
         onPress={navigateToAnswerAllScreen}
         accessoryLeft={<Icon name="question-mark-circle-outline" />}
       >
-        Ir a Answer All Screen
+        Ir a Mis Respuestas
       </Button>
 
       <Button
@@ -82,7 +68,7 @@ export const HomeScreen = () => {
         onPress={navigateToQuestionRecordScreen}
         accessoryLeft={<Icon name="question-mark-circle-outline" />}
       >
-        Ir a Question Record Screen
+        Ir a Ver Todas las Respuestas 
       </Button>
 
       <Button 
