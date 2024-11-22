@@ -4,6 +4,8 @@ import { Platform } from 'react-native';
 
 
 
+console.log("estamos levantando en: ", PROD_URL);
+
 const serviceAxiosApi = axios.create({ 
   baseURL: `${PROD_URL}`, //ahora se puede cambiar la url dependiendo del .env
   headers: {

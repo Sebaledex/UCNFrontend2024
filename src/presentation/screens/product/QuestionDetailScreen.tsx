@@ -7,10 +7,13 @@ import { useQuestionStore } from '../../store/useQuestionStore';
 import { useRespuestaStore } from '../../store/useRespuestaStore';
 import { useAuthStore } from '../../store/auth/useAuthStore';
 import { launchCamera } from 'react-native-image-picker';
+import Geolocation from '@react-native-community/geolocation'; 
+import { Icon } from '@ui-kitten/components';
 
 const screenWidth = Dimensions.get('window').width;
 
 export const QuestionDetailScreen = () => {
+  const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
   const { fetchQuestionById, selectedQuestion, error } = useQuestionStore();
   const { submitResponse } = useRespuestaStore();
   const { user, status } = useAuthStore();
@@ -22,10 +25,26 @@ export const QuestionDetailScreen = () => {
   const [questionImages, setQuestionImages] = useState<{ [key: number]: string | null }>({});
   const [sendingAnswers, setSendingAnswers] = useState(false);
 
+  const getCoordinates = () => {
+    Geolocation.getCurrentPosition(
+      position => {
+        const { latitude, longitude } = position.coords;
+        setCoordinates({ latitude, longitude });
+      },
+      error => {
+        Alert.alert('Error', error.message);
+      },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+  };
+
   useEffect(() => {
     fetchQuestionById(id);
+    getCoordinates(); 
   }, [id]);
 
+
+  console.log('Coordenadas:', coordinates);
   if (error) {
     return (
       <Layout style={styles.centered}>
@@ -89,6 +108,7 @@ export const QuestionDetailScreen = () => {
       const imagenes = Object.keys(questionImages).map((key) => ({
         imagenBase64: questionImages[parseInt(key, 10)] || null,
       }));
+      console.log('coordenadas:',coordinates); 
       console.log('Imágenes:', imagenes);
 
       if (!user) {
@@ -153,18 +173,35 @@ export const QuestionDetailScreen = () => {
     </View>
   );
 
-  return (
-    <Layout style={styles.container}>
-      <FlatList
-        data={selectedQuestion.cuestionario}
-        renderItem={renderQuestionItem}
-        horizontal
-        pagingEnabled
-        keyExtractor={(item, index) => index.toString()}
-        showsHorizontalScrollIndicator={false}
-      />
-    </Layout>
-  );
+
+return (
+  <Layout style={styles.container}>
+    {/* Sección de coordenadas y botón de recarga */}
+    <View style={styles.coordinatesContainer}>
+      {coordinates ? (
+        <Text style={styles.coordinatesText}>
+          Latitud: {coordinates.latitude.toFixed(4)}, Longitud: {coordinates.longitude.toFixed(4)}
+        </Text>
+      ) : (
+        <Text style={styles.coordinatesText}>Obteniendo coordenadas...</Text>
+      )}
+      <TouchableOpacity onPress={getCoordinates} style={styles.reloadButton}>
+      <Icon name="refresh-outline" fill="#007BFF" style={{ width: 24, height: 24 }} />
+      </TouchableOpacity>
+    </View>
+
+    {/* Lista de preguntas */}
+    <FlatList
+      data={selectedQuestion.cuestionario}
+      renderItem={renderQuestionItem}
+      horizontal
+      pagingEnabled
+      keyExtractor={(item, index) => index.toString()}
+      showsHorizontalScrollIndicator={false}
+    />
+  </Layout>
+);
+ 
 };
 
 const styles = StyleSheet.create({
@@ -235,4 +272,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
+  coordinatesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#eef4ff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  coordinatesText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  reloadButton: {
+    padding: 8, // Espaciado alrededor del ícono
+  },
+  
 });
