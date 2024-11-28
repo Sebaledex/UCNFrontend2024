@@ -4,6 +4,7 @@ import { useAuthStore } from '../../store/auth/useAuthStore';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { TokensScreen } from '../../store/TokensScreen';
+import { MachineScreen } from '../product/machineScreen';
 
 export const HomeScreen = () => {
   const { logout } = useAuthStore();
@@ -41,6 +42,19 @@ export const HomeScreen = () => {
     });
   };
 
+  const navigateToMachineScreen = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'MachinaPreviewScreen' }],
+    });
+  };
+
+  const navigateToAddMachineScreen = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'MachinaAddScreen' }],
+    });
+  };
 
   return (
     <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -69,6 +83,22 @@ export const HomeScreen = () => {
         accessoryLeft={<Icon name="question-mark-circle-outline" />}
       >
         Ir a Ver Todas las Respuestas 
+      </Button>
+
+      <Button
+        style={{ marginVertical: 10 }}
+        onPress={navigateToMachineScreen}
+        accessoryLeft={<Icon name="question-mark-circle-outline" />}
+      >
+        Ir a MachineScreen
+      </Button>
+
+      <Button
+        style={{ marginVertical: 10 }}
+        onPress={navigateToAddMachineScreen}
+        accessoryLeft={<Icon name="question-mark-circle-outline" />}
+      >
+        Ir a MachineScreen
       </Button>
 
       <Button 

@@ -12,7 +12,7 @@ export interface AuthState {
   user?: User;
 
   login: (username: string, password: string) => Promise<boolean>;
-  signup: (name: string, username: string, email: string, password: string) => Promise<boolean>;
+  signup: (name: string, username: string, email: string, password: string, area: string) => Promise<boolean>;
   logout: () => Promise<void>;
   refresh: () => Promise<boolean>;
 }
@@ -37,8 +37,8 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     return true;
   },
 
-  signup: async (name: string, username: string, email: string, password: string) => {
-    const resp = await authSignup(name, username, email, password);
+  signup: async (name: string, username: string, email: string, password: string, area: string) => {
+    const resp = await authSignup(name, username, email, password, area);
     if (!resp) {
       set({ status: 'unauthenticated', access_token: undefined, refresh_token: undefined, user: undefined });
       return false;
@@ -49,7 +49,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   logout: async () => {
-    await AsyncStorage.multiRemove(['access_token', 'user_id', 'refresh_token']); // Remover todos los datos relevantes
+    await AsyncStorage.multiRemove(['access_token', 'user_id', 'refresh_token']);
     set({ status: 'unauthenticated', access_token: undefined, user: undefined, refresh_token: undefined });
   },
 
@@ -59,20 +59,20 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       console.log('No refresh token available');
       set({ status: 'unauthenticated', access_token: undefined, user: undefined });
       return false;
-    }else{
-    console.log('Refreshing token...');
-    const resp = await authRefreshToken(refresh_token);
-
-    if (resp) {
-    await StorageAdapter.setItem('token', resp.access_token);
-    await StorageAdapter.setItem('refresh_token', resp.refresh_token);
-    await StorageAdapter.setItem('access_token', resp.access_token);
-    set({ status: 'authenticated', access_token: resp.access_token, refresh_token: resp.refresh_token });
-    return true;
     } else {
-      set({ status: 'unauthenticated', access_token: undefined, user: undefined, refresh_token: undefined });
-      return false;
+      console.log('Refreshing token...');
+      const resp = await authRefreshToken(refresh_token);
+
+      if (resp) {
+        await StorageAdapter.setItem('token', resp.access_token);
+        await StorageAdapter.setItem('refresh_token', resp.refresh_token);
+        await StorageAdapter.setItem('access_token', resp.access_token);
+        set({ status: 'authenticated', access_token: resp.access_token, refresh_token: resp.refresh_token });
+        return true;
+      } else {
+        set({ status: 'unauthenticated', access_token: undefined, user: undefined, refresh_token: undefined });
+        return false;
+      }
     }
-  }
-  }
+  },
 }));

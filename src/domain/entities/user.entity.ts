@@ -4,5 +4,6 @@ export interface User{
     name: string;
     username: string;
     email: string;
+    area: string;
     //rol1: string;
 }
