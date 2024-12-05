@@ -11,7 +11,7 @@ import { TokensScreen } from '../store/TokensScreen';
 import { AnswerAllScreen } from '../screens/product/AnswerAllScreen';
 import { QuestionRecordScreen } from '../screens/product/QuestionRecordScreen';
 import { QuestionRecordDetailScreen } from '../screens/product/QuestionRecordDetailScreen';
-
+import CheckBiometry from '../screens/product/CheckBiometry';
 
 export type RootStackParams = {
   LoadingScreen: undefined;
@@ -26,6 +26,7 @@ export type RootStackParams = {
   AnswerAllScreen: undefined;
   QuestionRecordScreen: undefined;
   QuestionRecordDetailScreen: { id: string };
+  CheckBiometry: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParams>(); // Especifica RootStackParams aquí
@@ -100,6 +101,11 @@ export const StackNavigator = () => {
         options={{ cardStyleInterpolator: fadeAnimation }}
         name="QuestionRecordDetailScreen"
         component={QuestionRecordDetailScreen}
+      />
+      <Stack.Screen
+        options={{ cardStyleInterpolator: fadeAnimation }}
+        name="CheckBiometry"
+        component={CheckBiometry}
       />
       <Stack.Screen name="ProductScreen" component={ProductScreen} />
     </Stack.Navigator>

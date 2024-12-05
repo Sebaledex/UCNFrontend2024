@@ -41,6 +41,13 @@ export const HomeScreen = () => {
     });
   };
 
+  const navigatetobiometry = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'CheckBiometry' }],
+    });
+  };
+
 
   return (
     <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -69,6 +76,14 @@ export const HomeScreen = () => {
         accessoryLeft={<Icon name="question-mark-circle-outline" />}
       >
         Ir a Ver Todas las Respuestas 
+      </Button>
+
+      <Button
+        style={{ marginVertical: 10 }}
+        onPress={navigatetobiometry}
+        accessoryLeft={<Icon name="question-mark-circle-outline" />}
+      >
+        testing biometry
       </Button>
 
       <Button 
