@@ -5,4 +5,5 @@ export interface User{
     username: string;
     email: string;
     //rol1: string;
+    area: string;
 }

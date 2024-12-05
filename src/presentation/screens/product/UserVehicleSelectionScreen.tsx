@@ -9,11 +9,11 @@ import {
   Modal,
 } from "@ui-kitten/components";
 import { FlatList, StyleSheet, ScrollView, View } from "react-native";
-import { useMachineStore } from "../../store/useMachineStore";
-import { Machine } from "../../../domain/entities/machine.entity";
 import { useAuthStore } from "../../store/auth/useAuthStore";
 import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParams } from "../../navigation/StackNavigator";
+import { useMachineStore } from "../../store/useMachineStore";
+import { Machine } from "../../../domain/entities/machine.entity";
 
 export const UserVehicleSelectionScreen = () => {
   const { machines, fetchAllMachines, error } = useMachineStore();

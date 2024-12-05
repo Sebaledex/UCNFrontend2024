@@ -11,10 +11,10 @@ import { TokensScreen } from '../store/TokensScreen';
 import { AnswerAllScreen } from '../screens/product/AnswerAllScreen';
 import { QuestionRecordScreen } from '../screens/product/QuestionRecordScreen';
 import { QuestionRecordDetailScreen } from '../screens/product/QuestionRecordDetailScreen';
-import { MachinaPreviewScreen } from '../screens/product/MachinaPreviewScreen';
-import { MachinaAddScreen } from '../screens/product/MachinaAddScreen';
 import { UserVehicleSelectionScreen } from '../screens/product/UserVehicleSelectionScreen';
 import { UserProfileScreen } from '../screens/product/UserProfileScreen';
+import { MachinaPreviewScreen } from '../screens/product/MachinaPreviewScreen';
+import { MachinaAddScreen } from '../screens/product/MachinaAddScreen';
 
 
 
