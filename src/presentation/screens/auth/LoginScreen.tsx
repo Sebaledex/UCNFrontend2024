@@ -121,7 +121,7 @@ export const LoginScreen = ({ navigation }: Props) => {
             justifyContent: "center",
           }}
         >
-         {/* <Text>¿No tienes cuenta?</Text>
+         <Text>¿No tienes cuenta?</Text>
           <Text
             status="primary"
             category="s1"
@@ -129,7 +129,7 @@ export const LoginScreen = ({ navigation }: Props) => {
           >
             {" "}
             Crea una{" "}
-          </Text>*/}
+          </Text>
         </Layout>
 
         <Layout style={{ height: 50 }} />
@@ -140,7 +140,7 @@ export const LoginScreen = ({ navigation }: Props) => {
             justifyContent: "center",
           }}
         >
-          {/*<Text>¿Olvidaste tu contraseña?</Text>
+          <Text>¿Olvidaste tu contraseña?</Text>
           <Text
             status="primary"
             //category="s1"
@@ -148,7 +148,7 @@ export const LoginScreen = ({ navigation }: Props) => {
           >
             {" "}
             Cambiar contraseña{" "}
-          </Text>*/}
+          </Text>
         </Layout>
       </ScrollView>
     </Layout>

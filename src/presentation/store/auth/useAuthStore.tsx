@@ -29,7 +29,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       set({ status: 'unauthenticated', access_token: undefined, user: undefined });
       return false;
     }
-    console.log({ resp });
+    console.log("Datos del usuario logueado:", resp.user); // Verifica si la respuesta contiene los datos correctos
     await StorageAdapter.setItem('refresh_token', resp.refresh_token);
     await StorageAdapter.setItem('access_token', resp.access_token);
     await StorageAdapter.setItem('user_id', resp.user.id);

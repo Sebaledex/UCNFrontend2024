@@ -16,7 +16,7 @@ export const QuestionScreen = () => {
 
   const handleQuestionPress = (_id: string) => {
     // Navega a QuestionDetailScreen y pasa el ID del cuestionario
-    navigation.navigate('QuestionDetailScreen', { id: _id });
+    navigation.navigate('UserVehicleSelectionScreen', { id: _id });
   };
 
   if (error) {

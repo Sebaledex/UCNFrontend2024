@@ -32,7 +32,7 @@ export const QuestionRecordDetailScreen = () => {
 
   useEffect(() => {
     // Filtrar las respuestas por el ID del cuestionario
-    const filtered = responses.filter((respuesta) => respuesta.cuestionario_id === id);
+    const filtered = responses.filter((respuesta) => respuesta._id === id);
     setFilteredResponses(filtered);
   }, [responses, id]);
 
@@ -84,7 +84,7 @@ export const QuestionRecordDetailScreen = () => {
           {filteredResponses.length > 0 ? (
             filteredResponses.map((respuesta, index) => (
               <View key={index} style={styles.responseContainer}>
-                <Text style={styles.responseText}>Usuario: {respuesta.user_id}</Text>
+                <Text style={styles.responseText}>Usuario: {respuesta._id}</Text>
                 {respuesta.respuestas.map((respuestaPregunta, index) => (
                   <View key={index} style={styles.answerContainer}>
                     <Text style={styles.answerText}>

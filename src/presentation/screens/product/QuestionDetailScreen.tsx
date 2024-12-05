@@ -16,8 +16,7 @@ export const QuestionDetailScreen = () => {
   const { user, status } = useAuthStore();
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const route = useRoute();
-  const { id } = route.params as { id: string };
-
+  const { id, machinePatente } = route.params as { id: string; machinePatente: string };
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({});
   const [questionImages, setQuestionImages] = useState<{ [key: number]: string | null }>({});
   const [sendingAnswers, setSendingAnswers] = useState(false);
@@ -81,24 +80,31 @@ export const QuestionDetailScreen = () => {
 
   const handleSendAllAnswers = async () => {
     setSendingAnswers(true);
+  
+    // Geolocalización predefinida
+    const geolocalizacion = {
+      latitud: -33.4489,
+      longitud: -70.6693,
+    };
+  
+    // Fecha de respuesta en formato ISO
+    const fecha_respuesta = new Date().toISOString();
+  
     try {
       const respuestas = Object.keys(selectedAnswers).map((key) => ({
         numero: parseInt(key, 10) + 1,
         respuestaSeleccionada: selectedAnswers[parseInt(key, 10)],
       }));
-      const imagenes = Object.keys(questionImages).map((key) => ({
-        imagenBase64: questionImages[parseInt(key, 10)] || null,
-      }));
-      console.log('Imágenes:', imagenes);
-
-      if (!user) {
+  
+      // Validación de usuario
+      if (!user || !user.id) {
         Alert.alert('Error', 'No se encontró el usuario. Inicia sesión nuevamente.');
         return;
       }
-
-      await submitResponse(user.id, id, respuestas);
-      console.log('Respuestas con imágenes:', respuestas);
-
+  
+      // Enviar respuestas al store
+      await submitResponse(user.id, id, respuestas, machinePatente, fecha_respuesta, geolocalizacion);
+  
       Alert.alert('Éxito', 'Todas las respuestas se enviaron correctamente');
       navigation.goBack();
     } catch (error) {
@@ -155,6 +161,13 @@ export const QuestionDetailScreen = () => {
 
   return (
     <Layout style={styles.container}>
+      {/* Mostrar ID y Patente arriba */}
+      <View style={styles.header}>
+        <Text style={styles.headerText}>ID del Cuestionario: {id}</Text>
+        <Text style={styles.headerText}>Patente de la Máquina: {machinePatente}</Text>
+        <Text style={styles.headerText}>ID del Usuario: {user?.id || "No disponible"}</Text>
+      </View>
+
       <FlatList
         data={selectedQuestion.cuestionario}
         renderItem={renderQuestionItem}
@@ -171,6 +184,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F7F9FC',
+  },
+  header: {
+    backgroundColor: '#1F4A6F',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    marginBottom: 20,
+  },
+  headerText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   centered: {
     flex: 1,

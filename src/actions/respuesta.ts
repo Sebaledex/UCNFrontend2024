@@ -24,10 +24,13 @@ export const getResponseById = async (id: string): Promise<Respuesta> => {
 export const createResponse = async (
   userId: string,
   cuestionarioId: string,
-  respuestas: { numero: number; respuestaSeleccionada: string }[]
+  respuestas: { numero: number; respuestaSeleccionada: string }[],
+  patente: string,
+  fecha_respuesta: string,
+  geolocalizacion: { latitud: number; longitud: number }
 ): Promise<Respuesta> => {
   try {
-    const payload = { respuestas };
+    const payload = { respuestas, patente, fecha_respuesta, geolocalizacion };
     const response = await serviceAxiosApi.post(`/v2/respuesta/${userId}/${cuestionarioId}`, payload);
     return response.data; // Retornamos la respuesta creada.
   } catch (error) {

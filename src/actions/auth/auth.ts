@@ -1,28 +1,24 @@
 import { serviceAxiosApi } from "../../config/api/serviceAxiosApi";
-import { User } from "../../domain/entities/user.entity";
+import { User } from '../../domain/entities/user.entity';
 import { AuthResponse } from "../../infrastructure/interfaces/auth.responses";
 
+const returnUserToken = (data: AuthResponse) => {
+  console.log("Datos recibidos del backend:", data);
+  const user: User = {
+    id: data.userId,
+    name: data.name,
+    username: data.username,
+    email: data.email,
+    area: data.area
+  };
 
-
-
-  const returnUserToken = ( data: AuthResponse ) => {
-
-    const user: User = {
-      id: data.userId,
-      //rol1: data.user_role,
-      name: data.name,
-      username: data.username,
-      email: ""
-    }
-  
-    return {
-      user: user,
-      access_token: data.access_token,
-      refresh_token: data.refresh_token,
-      user_id: data.userId,
-    }
-  }
-  
+  return {
+    user: user,
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+    user_id: data.userId,
+  };
+};
 
 export const authLogin = async (username: string, password: string) => {
 

@@ -41,6 +41,19 @@ export const HomeScreen = () => {
     });
   };
 
+  const navigateToMachineScreen = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'MachinaPreviewScreen' }],
+    });
+  };
+
+  const navigateToAddMachineScreen = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'UserProfileScreen' }],
+    });
+  };
 
   return (
     <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

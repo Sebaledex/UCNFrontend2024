@@ -11,6 +11,11 @@ import { TokensScreen } from '../store/TokensScreen';
 import { AnswerAllScreen } from '../screens/product/AnswerAllScreen';
 import { QuestionRecordScreen } from '../screens/product/QuestionRecordScreen';
 import { QuestionRecordDetailScreen } from '../screens/product/QuestionRecordDetailScreen';
+import { MachinaPreviewScreen } from '../screens/product/MachinaPreviewScreen';
+import { MachinaAddScreen } from '../screens/product/MachinaAddScreen';
+import { UserVehicleSelectionScreen } from '../screens/product/UserVehicleSelectionScreen';
+import { UserProfileScreen } from '../screens/product/UserProfileScreen';
+
 
 
 export type RootStackParams = {
@@ -21,11 +26,15 @@ export type RootStackParams = {
   HomeScreen: undefined;
   ProductScreen: undefined;
   QuestionScreen: undefined;
-  QuestionDetailScreen: { id: string };
+  QuestionDetailScreen: { id: string; machinePatente: string; userId: string }; // Agregado userId
   TokensScreen: undefined;
   AnswerAllScreen: undefined;
   QuestionRecordScreen: undefined;
-  QuestionRecordDetailScreen: { id: string };
+  QuestionRecordDetailScreen: { id: string};
+  MachinaPreviewScreen: undefined;
+  MachinaAddScreen: undefined;
+  UserVehicleSelectionScreen: { id: string };
+  UserProfileScreen: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParams>(); // Especifica RootStackParams aquí
@@ -101,7 +110,15 @@ export const StackNavigator = () => {
         name="QuestionRecordDetailScreen"
         component={QuestionRecordDetailScreen}
       />
+      <Stack.Screen
+        options={{ cardStyleInterpolator: fadeAnimation }}
+        name="UserProfileScreen"
+        component={UserProfileScreen}
+      />
       <Stack.Screen name="ProductScreen" component={ProductScreen} />
+      <Stack.Screen name="MachinaPreviewScreen" component={MachinaPreviewScreen} />
+      <Stack.Screen name="MachinaAddScreen" component={MachinaAddScreen} />
+      <Stack.Screen name="UserVehicleSelectionScreen" component={UserVehicleSelectionScreen} />
     </Stack.Navigator>
   );
 };

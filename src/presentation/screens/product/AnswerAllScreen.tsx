@@ -17,7 +17,7 @@ export const AnswerAllScreen = () => {
   useEffect(() => {
     fetchAllResponses();
   }, []);
-  let filteredResponses = responses.filter((respuesta) => respuesta.user_id === user?.id);
+  let filteredResponses = responses.filter((respuesta) => respuesta._id === user?.id);
   if (error) {
     return (
       <Layout style={styles.centered}>
@@ -37,9 +37,9 @@ export const AnswerAllScreen = () => {
 
   const renderResponseItem = ({ item }: { item: Respuesta }) => (
     <Card style={styles.card} status="primary">
-      <Text style={styles.title}>Cuestionario ID: {item.cuestionario_id}</Text>
+      <Text style={styles.title}>Cuestionario ID: {item._id}</Text>
       <Divider style={styles.divider} />
-      <Text style={styles.subTitle}>Usuario ID: {item.user_id}</Text>
+      <Text style={styles.subTitle}>Usuario ID: {item._id}</Text>
       <Divider style={styles.divider} />
       <Text style={styles.title}>Respuestas:</Text>
       {item.respuestas.map((respuesta, index) => (
