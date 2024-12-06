@@ -9,7 +9,7 @@ import { useAuthStore } from '../../store/auth/useAuthStore';
 import { launchCamera } from 'react-native-image-picker';
 import Geolocation from '@react-native-community/geolocation';
 import ReactNativeBiometrics from 'react-native-biometrics';
-
+import RNFS from 'react-native-fs';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -73,13 +73,16 @@ export const QuestionDetailScreen = () => {
     }));
   };
 
+
+  
+
   const handleOpenCamera = (questionIndex: number) => {
     const options = {
       mediaType: 'photo' as const,
       includeBase64: true,
-      saveToPhotos: false,
+      saveToPhotos: true, // Guarda la foto en la galería
     };
-
+  
     launchCamera(options, (response) => {
       if (response.didCancel) {
         Alert.alert('Cancelado', 'La captura de la foto fue cancelada.');
@@ -87,20 +90,26 @@ export const QuestionDetailScreen = () => {
         Alert.alert('Error', `Error al abrir la cámara: ${response.errorMessage}`);
       } else if (response.assets && response.assets.length > 0) {
         const photoData = response.assets[0];
-        if (photoData.base64) {
-          setQuestionImages((prev) => ({
-            ...prev,
-            [questionIndex]: photoData.base64 || null,
-          }));
+        const fileUri = photoData.uri ?? null; // Asegúrate de que sea null si no hay URI
+  
+        // Guardamos el URI de la foto en el estado para esa pregunta
+        setQuestionImages((prev) => ({
+          ...prev,
+          [questionIndex]: fileUri, // Asociamos el URI a la pregunta
+        }));
+  
+        if (fileUri) {
+          Alert.alert('Éxito', 'Foto guardada exitosamente.');
         } else {
-          Alert.alert('Error', 'No se pudo obtener la imagen en base64.');
+          Alert.alert('Error', 'No se pudo guardar la foto.');
         }
       }
     });
   };
+  
+  
 
   const handleSendAllAnswers = async () => {
-    
     const biometrics = new ReactNativeBiometrics();
     try {
       const sensorInfo = await biometrics.isSensorAvailable();
@@ -139,10 +148,15 @@ export const QuestionDetailScreen = () => {
       // Fecha de respuesta en formato ISO
       const fecha_respuesta = new Date().toISOString();
   
-      const respuestas = Object.keys(selectedAnswers).map((key) => ({
-        numero: parseInt(key, 10) + 1,
-        respuestaSeleccionada: selectedAnswers[parseInt(key, 10)],
-      }));
+      // Mapear las respuestas y asociar las fotos de cada pregunta
+      const respuestas = Object.keys(selectedAnswers).map((key) => {
+        const questionIndex = parseInt(key, 10);
+        return {
+          numero: questionIndex + 1,
+          respuestaSeleccionada: selectedAnswers[questionIndex],
+          foto: questionImages[questionIndex] ?? "", // Enviamos el URI de la foto si existe
+        };
+      });
   
       // Validación de usuario
       if (!user || !user.id) {
@@ -151,7 +165,6 @@ export const QuestionDetailScreen = () => {
       }
   
       // Enviar respuestas al store
-      //console.log('aca estan las imagenes:', questionImages);
       await submitResponse(user.id, id, respuestas, machinePatente, fecha_respuesta, geolocalizacion);
   
       Alert.alert('Éxito', 'Todas las respuestas se enviaron correctamente');
@@ -163,6 +176,7 @@ export const QuestionDetailScreen = () => {
       setSendingAnswers(false);
     }
   };
+  
 
   const renderQuestionItem = ({ item, index }: { item: any; index: number }) => (
     <View style={[styles.questionWrapper, { width: screenWidth }]}>

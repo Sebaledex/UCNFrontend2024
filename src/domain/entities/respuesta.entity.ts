@@ -4,6 +4,7 @@ export interface Respuesta {
   cuestionario_id: string;
   patente: string; // Ahora tenemos la patente
   fecha_respuesta: string; // Fecha en formato ISO 8601
+  foto: string;
   geolocalizacion: {
     latitud: number; // Latitud de la geolocalización
     longitud: number; // Longitud de la geolocalización
