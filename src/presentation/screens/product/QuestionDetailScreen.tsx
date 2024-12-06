@@ -7,6 +7,9 @@ import { useQuestionStore } from '../../store/useQuestionStore';
 import { useRespuestaStore } from '../../store/useRespuestaStore';
 import { useAuthStore } from '../../store/auth/useAuthStore';
 import { launchCamera } from 'react-native-image-picker';
+import Geolocation from '@react-native-community/geolocation';
+import ReactNativeBiometrics from 'react-native-biometrics';
+
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -20,9 +23,27 @@ export const QuestionDetailScreen = () => {
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({});
   const [questionImages, setQuestionImages] = useState<{ [key: number]: string | null }>({});
   const [sendingAnswers, setSendingAnswers] = useState(false);
+  const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
+
+
+  const getCoordinates = () => {
+    Geolocation.getCurrentPosition(
+      position => {
+        const { latitude, longitude } = position.coords;
+        setCoordinates({ latitude, longitude });
+      },
+      error => {
+        Alert.alert('Error', error.message);
+      },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+  };
+  
+  console.log('Coordenadas:', coordinates);
 
   useEffect(() => {
     fetchQuestionById(id);
+    getCoordinates();
   }, [id]);
 
   if (error) {
@@ -79,18 +100,45 @@ export const QuestionDetailScreen = () => {
   };
 
   const handleSendAllAnswers = async () => {
-    setSendingAnswers(true);
-  
-    // Geolocalización predefinida
-    const geolocalizacion = {
-      latitud: -33.4489,
-      longitud: -70.6693,
-    };
-  
-    // Fecha de respuesta en formato ISO
-    const fecha_respuesta = new Date().toISOString();
-  
+    
+    const biometrics = new ReactNativeBiometrics();
     try {
+      const sensorInfo = await biometrics.isSensorAvailable();
+      if (!sensorInfo.available) {
+        Alert.alert('Error', 'Este dispositivo no soporta biometría.');
+        return;
+      }
+  
+      const promptResponse = await biometrics.simplePrompt({
+        promptMessage: 'Por favor, autentíquese para continuar',
+        cancelButtonText: 'Cancelar',
+      });
+  
+      if (!promptResponse.success) {
+        Alert.alert('Cancelado', 'La autenticación biométrica fue cancelada.');
+        return;
+      }
+  
+      // Si la autenticación biométrica es exitosa, enviar respuestas
+      setSendingAnswers(true);
+  
+      if (!coordinates?.latitude || !coordinates?.longitude) {
+        Alert.alert(
+          'Obteniendo geolocalización',
+          'Espere a que se obtenga la ubicación antes de enviar las respuestas.',
+        );
+        return;
+      }
+  
+      // Geolocalización es válida
+      const geolocalizacion = {
+        latitud: coordinates.latitude,
+        longitud: coordinates.longitude,
+      };
+  
+      // Fecha de respuesta en formato ISO
+      const fecha_respuesta = new Date().toISOString();
+  
       const respuestas = Object.keys(selectedAnswers).map((key) => ({
         numero: parseInt(key, 10) + 1,
         respuestaSeleccionada: selectedAnswers[parseInt(key, 10)],
@@ -103,13 +151,14 @@ export const QuestionDetailScreen = () => {
       }
   
       // Enviar respuestas al store
+      console.log('aca estan las imagenes:', questionImages);
       await submitResponse(user.id, id, respuestas, machinePatente, fecha_respuesta, geolocalizacion);
   
       Alert.alert('Éxito', 'Todas las respuestas se enviaron correctamente');
       navigation.goBack();
     } catch (error) {
-      console.error('Error al enviar las respuestas:', error);
-      Alert.alert('Error', 'Hubo un problema al enviar las respuestas');
+      console.error('Error durante la autenticación biométrica o el envío:', error);
+      Alert.alert('Error', 'Ocurrió un problema al autenticar o enviar las respuestas.');
     } finally {
       setSendingAnswers(false);
     }
@@ -161,11 +210,17 @@ export const QuestionDetailScreen = () => {
 
   return (
     <Layout style={styles.container}>
-      {/* Mostrar ID y Patente arriba */}
       <View style={styles.header}>
-        <Text style={styles.headerText}>ID del Cuestionario: {id}</Text>
+       {/* <Text style={styles.headerText}>ID del Cuestionario: {id}</Text>*/}
         <Text style={styles.headerText}>Patente de la Máquina: {machinePatente}</Text>
-        <Text style={styles.headerText}>ID del Usuario: {user?.id || "No disponible"}</Text>
+       {/*  <Text style={styles.headerText}>ID del Usuario: {user?.id || "No disponible"}</Text> */}
+       {coordinates ? (
+        <Text style={styles.headerText}>
+          Latitud: {coordinates.latitude.toFixed(4)}, Longitud: {coordinates.longitude.toFixed(4)}
+        </Text>
+      ) : (
+        <Text style={styles.headerText}>Obteniendo coordenadas...</Text>
+      )}
       </View>
 
       <FlatList
