@@ -15,6 +15,9 @@ import { UserVehicleSelectionScreen } from '../screens/product/UserVehicleSelect
 import { UserProfileScreen } from '../screens/product/UserProfileScreen';
 import { MachinaPreviewScreen } from '../screens/product/MachinaPreviewScreen';
 import { MachinaAddScreen } from '../screens/product/MachinaAddScreen';
+import { QuestionOptionsScreen } from '../screens/Option/QuestionOptionsScreen';
+import { MachinaOptionsScreen } from '../screens/Option/MachinaOptionsScreen';
+
 
 
 
@@ -35,6 +38,8 @@ export type RootStackParams = {
   MachinaAddScreen: undefined;
   UserVehicleSelectionScreen: { id: string };
   UserProfileScreen: undefined;
+  QuestionOptionsScreen: undefined;
+  MachinaOptionsScreen: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParams>(); // Especifica RootStackParams aquí
@@ -115,6 +120,16 @@ export const StackNavigator = () => {
         name="UserProfileScreen"
         component={UserProfileScreen}
       />
+      <Stack.Screen
+        options={{ cardStyleInterpolator: fadeAnimation }}
+        name="QuestionOptionsScreen"
+        component={QuestionOptionsScreen}
+      />  
+      <Stack.Screen
+        options={{ cardStyleInterpolator: fadeAnimation }}
+        name="MachinaOptionsScreen"
+        component={MachinaOptionsScreen}
+      />              
       <Stack.Screen name="ProductScreen" component={ProductScreen} />
       <Stack.Screen name="MachinaPreviewScreen" component={MachinaPreviewScreen} />
       <Stack.Screen name="MachinaAddScreen" component={MachinaAddScreen} />

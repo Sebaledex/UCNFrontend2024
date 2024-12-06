@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Button, Icon, Layout, Text, Spinner } from '@ui-kitten/components';
+import { Button, Icon, Layout, Text } from '@ui-kitten/components';
 import { useAuthStore } from '../../store/auth/useAuthStore';
 import { Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-
-
+import { useNavigation, CommonActions } from '@react-navigation/native';
+import { RootStackParams } from '../../navigation/StackNavigator';
 
 export const HomeScreen = () => {
   const { logout } = useAuthStore();
@@ -14,102 +13,58 @@ export const HomeScreen = () => {
   const handleLogout = () => {
     logout();
     Alert.alert('Sesión cerrada.');
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'CheckingScreen' }],
-    });
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'CheckingScreen' }], // Nombre exacto del Stack
+      }),
+    );
   };
 
-  const navigateToQuestionScreen = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'QuestionScreen' }],
-    });
-  };
-
-
-  const navigateToAnswerAllScreen = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'AnswerAllScreen' }],
-    });
-  };
-
-  const navigateToQuestionRecordScreen = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'QuestionRecordScreen' }],
-    });
-  };
-
-  const navigateToMachineScreen = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'MachinaPreviewScreen' }],
-    });
-  };
-
-  const navigateToAddMachineScreen = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'MachinaAddScreen' }],
-    });
+  const navigateToScreen = (screen: keyof RootStackParams) => {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: screen }], // Se asegura que el nombre sea correcto
+      }),
+    );
   };
 
   return (
     <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text category='h1'>HomeScreen</Text>
+      <Text category="h1">HomeScreen</Text>
 
- 
       <Button
         style={{ marginVertical: 10 }}
-        onPress={navigateToQuestionScreen}
+        onPress={() => navigateToScreen('QuestionOptionsScreen')}
         accessoryLeft={<Icon name="question-mark-circle-outline" />}
       >
-        Ir a Responder cuestionario 
+        Cuestionarios
       </Button>
 
       <Button
         style={{ marginVertical: 10 }}
-        onPress={navigateToAnswerAllScreen}
-        accessoryLeft={<Icon name="question-mark-circle-outline" />}
+        onPress={() => navigateToScreen('MachinaOptionsScreen')}
+        accessoryLeft={<Icon name="car-outline" />}
       >
-        Ir a Mis Respuestas
+        Máquinas
       </Button>
 
       <Button
         style={{ marginVertical: 10 }}
-        onPress={navigateToQuestionRecordScreen}
-        accessoryLeft={<Icon name="question-mark-circle-outline" />}
+        onPress={() => navigateToScreen('UserProfileScreen')}
+        accessoryLeft={<Icon name="person-outline" />}
       >
-        Ir a Ver Todas las Respuestas 
+        Datos Usuarios
       </Button>
 
       <Button
-        style={{ marginVertical: 10 }}
-        onPress={navigateToMachineScreen}
-        accessoryLeft={<Icon name="question-mark-circle-outline" />}
-      >
-        Ir a MachineScreen
-      </Button>
-
-      <Button
-        style={{ marginVertical: 10 }}
-        onPress={navigateToAddMachineScreen}
-        accessoryLeft={<Icon name="question-mark-circle-outline" />}
-      >
-        Ir a MachineScreen
-      </Button>
-
-      <Button 
         style={{ marginVertical: 10 }}
         accessoryLeft={<Icon name="log-out-outline" />}
         onPress={handleLogout}
-        disabled={loading}
       >
         Cerrar sesión
       </Button>
-
     </Layout>
   );
 };

@@ -1,5 +1,7 @@
 export interface Respuesta {
   _id: string; // Este campo se refiere al ObjectId de MongoDB
+  user_id: string;
+  cuestionario_id: string;
   patente: string; // Ahora tenemos la patente
   fecha_respuesta: string; // Fecha en formato ISO 8601
   geolocalizacion: {

@@ -13,7 +13,7 @@ export const getAllResponses = async (): Promise<Respuesta[]> => {
 
 export const getResponseById = async (id: string): Promise<Respuesta> => {
   try {
-    const response = await serviceAxiosApi.get(`/v2/respuesta/${id}`);
+    const response = await serviceAxiosApi.get(`/v2/respuesta/user/${id}`);
     return response.data; // Retornamos una respuesta específica.
   } catch (error) {
     console.error('Error al obtener la respuesta:', error);
