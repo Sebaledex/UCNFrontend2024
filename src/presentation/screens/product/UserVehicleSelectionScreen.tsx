@@ -14,6 +14,12 @@ import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navig
 import { RootStackParams } from "../../navigation/StackNavigator";
 import { useMachineStore } from "../../store/useMachineStore";
 import { Machine } from "../../../domain/entities/machine.entity";
+import { LogBox } from "react-native";
+
+// Ignorar advertencias específicas
+LogBox.ignoreLogs([
+  "Support for defaultProps will be removed from function components",
+]);
 
 export const UserVehicleSelectionScreen = () => {
   const { machines, fetchAllMachines, error } = useMachineStore();
