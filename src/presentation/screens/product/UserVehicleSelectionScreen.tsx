@@ -97,44 +97,42 @@ export const UserVehicleSelectionScreen = () => {
 
   return (
     <Layout style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollView}>
-        {/* Barra azul superior */}
-        <View style={styles.header}>
-          <Text category="h5" style={styles.headerText}>
-            Datos del Usuario
-          </Text>
-        </View>
-
-        {/* Mostrar datos del usuario */}
-        <View style={styles.userInfo}>
-          <Text style={styles.userText}>
-            ID: <Text style={styles.userInfoBold}>{user?.id || "No disponible"}</Text>
-          </Text>
-          <Text style={styles.userText}>
-            Nombre: <Text style={styles.userInfoBold}>{user?.name || "No disponible"}</Text>
-          </Text>
-          <Text style={styles.userText}>
-            Email: <Text style={styles.userInfoBold}>{user?.email || "No disponible"}</Text>
-          </Text>
-          <Text style={styles.userText}>
-            Área: <Text style={styles.userInfoBold}>{user?.area || "No disponible"}</Text>
-          </Text>
-        </View>
-
-        {/* Mensaje de máquinas */}
-        <Text category="h5" style={styles.machineTitle}>
-          Seleccione máquina para empezar
+      {/* Barra azul superior */}
+      <View style={styles.header}>
+        <Text category="h5" style={styles.headerText}>
+          Datos del Usuario
         </Text>
+      </View>
 
-        {/* Mostrar la lista de máquinas */}
-        <FlatList
-          data={filteredMachines}
-          keyExtractor={(item) => item._id}
-          renderItem={renderMachineItem}
-          ItemSeparatorComponent={() => <Divider />}
-          contentContainerStyle={styles.machineList}
-        />
-      </ScrollView>
+      {/* Mostrar datos del usuario */}
+      <View style={styles.userInfo}>
+        <Text style={styles.userText}>
+          ID: <Text style={styles.userInfoBold}>{user?.id || "No disponible"}</Text>
+        </Text>
+        <Text style={styles.userText}>
+          Nombre: <Text style={styles.userInfoBold}>{user?.name || "No disponible"}</Text>
+        </Text>
+        <Text style={styles.userText}>
+          Email: <Text style={styles.userInfoBold}>{user?.email || "No disponible"}</Text>
+        </Text>
+        <Text style={styles.userText}>
+          Área: <Text style={styles.userInfoBold}>{user?.area || "No disponible"}</Text>
+        </Text>
+      </View>
+
+      {/* Mensaje de máquinas */}
+      <Text category="h5" style={styles.machineTitle}>
+        Seleccione máquina para empezar
+      </Text>
+
+      {/* Mostrar la lista de máquinas */}
+      <FlatList
+        data={filteredMachines}
+        keyExtractor={(item) => item._id}
+        renderItem={renderMachineItem}
+        ItemSeparatorComponent={() => <Divider />}
+        contentContainerStyle={styles.machineList}
+      />
 
       {/* Botón para regresar al Home */}
       <Button style={styles.button} onPress={() => navigation.navigate("HomeScreen")}>
