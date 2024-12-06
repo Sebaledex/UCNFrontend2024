@@ -26,8 +26,11 @@ export const UserVehicleSelectionScreen = () => {
 
   // Filtrar máquinas por área del usuario
   const filteredMachines = user
-    ? machines.filter((machine) => machine.area === user.area)
+    ? machines
+        .filter((machine) => machine.area === user.area)
+        .sort((a, b) => a.patente.localeCompare(b.patente))
     : [];
+    console.log("Máquinas filtradas:", filteredMachines);
 
   useEffect(() => {
     fetchAllMachines();

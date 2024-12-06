@@ -231,6 +231,10 @@ export const QuestionDetailScreen = () => {
         keyExtractor={(item, index) => index.toString()}
         showsHorizontalScrollIndicator={false}
       />
+
+<Button style={styles.button} onPress={() => navigation.goBack()}>
+          Volver
+        </Button>
     </Layout>
   );
 };
@@ -316,5 +320,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  button: {
+    marginTop: 16,
+    marginBottom: 16,
+    marginLeft: 16,
+    marginRight: 16,
   },
 });
