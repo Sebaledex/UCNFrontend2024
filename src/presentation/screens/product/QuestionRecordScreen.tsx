@@ -6,6 +6,8 @@ import { useQuestionStore } from '../../store/useQuestionStore';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { RootStackParams } from '../../navigation/StackNavigator';
 import { Respuesta } from '../../../domain/entities/respuesta.entity';
+import { Image } from 'react-native';
+
 
 export const QuestionRecordScreen = () => {
   const { responses, fetchAllResponses, error } = useRespuestaStore();
@@ -64,6 +66,20 @@ export const QuestionRecordScreen = () => {
       <Text style={styles.subTitle}>
         Fecha: {item.fecha_respuesta ? formatDate(item.fecha_respuesta) : 'Fecha no disponible'}
       </Text>
+  
+      <Divider style={styles.divider} />
+      
+      {/* Sección de Evidencia */}
+      <Text style={styles.title}>Evidencia:</Text>
+      {item.foto ? (
+        <Image
+          source={{ uri: item.foto }}
+          style={{ width: 200, height: 200, resizeMode: 'contain' }} // Ajusta el tamaño y estilo de la imagen
+        />
+      ) : (
+        <Text style={styles.subTitle}>Evidencia no disponible</Text>
+      )}
+  
       <Divider style={styles.divider} />
       <Text style={styles.title}>Respuestas:</Text>
       {item.respuestas.map((respuesta, index) => (

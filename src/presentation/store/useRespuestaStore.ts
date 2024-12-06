@@ -14,7 +14,8 @@ interface RespuestaState {
     respuestas: { numero: number; respuestaSeleccionada: string }[],
     patente: string,
     fecha_respuesta: string,
-    geolocalizacion: { latitud: number; longitud: number }
+    geolocalizacion: { latitud: number; longitud: number },
+    foto:string,
   ) => Promise<void>; // Enviar una nueva respuesta.
 }
 
@@ -47,10 +48,11 @@ export const useRespuestaStore = create<RespuestaState>((set) => ({
     respuestas,
     patente,
     fecha_respuesta,
-    geolocalizacion
+    geolocalizacion,
+    foto
   ) => {
     try {
-      await createResponse(userId, cuestionarioId, respuestas, patente, fecha_respuesta, geolocalizacion);
+      await createResponse(userId, cuestionarioId, respuestas, patente, fecha_respuesta, geolocalizacion,foto);
       set({ error: null });
     } catch (error) {
       set({ error: (error as Error).message });

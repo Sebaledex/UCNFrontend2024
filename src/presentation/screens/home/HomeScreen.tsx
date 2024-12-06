@@ -7,6 +7,7 @@ import { RootStackParams } from '../../navigation/StackNavigator';
 
 export const HomeScreen = () => {
   const { logout } = useAuthStore();
+  const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
 
@@ -41,7 +42,7 @@ export const HomeScreen = () => {
 
       {/* Espaciado adicional entre el logo y el título */}
       <Text style={styles.title} category="h1">
-        HomeScreen
+        Bienvenido {user?.name ?? ''}
       </Text>
 
       {/* Botones de opciones */}

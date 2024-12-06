@@ -7,6 +7,8 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { RootStackParams } from '../../navigation/StackNavigator';
 import { useAuthStore } from '../../store/auth/useAuthStore';
 import { Respuesta } from '../../../domain/entities/respuesta.entity';
+import { Image } from 'react-native';
+
 
 export const AnswerAllScreen = () => {
   const { responses, fetchAllResponses, error } = useRespuestaStore();
@@ -68,6 +70,16 @@ export const AnswerAllScreen = () => {
       <Text style={styles.subTitle}>
         Fecha: {item.fecha_respuesta ? formatDate(item.fecha_respuesta) : 'Fecha no disponible'}
       </Text>
+      {/* Mostrar la imagen si existe */}
+    {item.foto ? (
+      <Image
+        source={{ uri: item.foto }}
+        style={{ width: 200, height: 200, resizeMode: 'contain' }} // Ajusta las dimensiones según tus necesidades
+      />
+    ) : (
+      <Text style={styles.subTitle}>Evidencia no disponible</Text>
+    )}
+
       <Divider style={styles.divider} />
       <Text style={styles.title}>Respuestas:</Text>
       {item.respuestas.map((respuesta, index) => (

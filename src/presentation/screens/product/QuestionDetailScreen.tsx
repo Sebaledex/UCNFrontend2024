@@ -9,7 +9,6 @@ import { useAuthStore } from '../../store/auth/useAuthStore';
 import { launchCamera } from 'react-native-image-picker';
 import Geolocation from '@react-native-community/geolocation';
 import ReactNativeBiometrics from 'react-native-biometrics';
-import RNFS from 'react-native-fs';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -147,6 +146,7 @@ export const QuestionDetailScreen = () => {
   
       // Fecha de respuesta en formato ISO
       const fecha_respuesta = new Date().toISOString();
+      console.log('imagenes:', questionImages);
   
       // Mapear las respuestas y asociar las fotos de cada pregunta
       const respuestas = Object.keys(selectedAnswers).map((key) => {
@@ -154,7 +154,7 @@ export const QuestionDetailScreen = () => {
         return {
           numero: questionIndex + 1,
           respuestaSeleccionada: selectedAnswers[questionIndex],
-          foto: questionImages[questionIndex] ?? "", // Enviamos el URI de la foto si existe
+          // foto: questionImages[questionIndex] ?? "" // Enviamos el URI de la foto si existe
         };
       });
   
@@ -165,7 +165,7 @@ export const QuestionDetailScreen = () => {
       }
   
       // Enviar respuestas al store
-      await submitResponse(user.id, id, respuestas, machinePatente, fecha_respuesta, geolocalizacion);
+      await submitResponse(user.id, id, respuestas, machinePatente, fecha_respuesta, geolocalizacion, questionImages[0]?.toString() ?? '');
   
       Alert.alert('Éxito', 'Todas las respuestas se enviaron correctamente');
       navigation.goBack();
@@ -198,27 +198,32 @@ export const QuestionDetailScreen = () => {
             <Text style={styles.optionText}>{opcion}</Text>
           </TouchableOpacity>
         ))}
-        <Button
-          style={styles.cameraButton}
-          onPress={() => handleOpenCamera(index)}
-        >
-          Tomar Foto
-        </Button>
-        {questionImages[index] && (
+        {/* {questionImages[index] && (
           <Image
             source={{ uri: `data:image/jpeg;base64,${questionImages[index]}` }}
             style={styles.imagePreview}
           />
-        )}
+        )} */}
       </Card>
+
       <Text style={styles.progressText}>
         Preguntas respondidas: {answeredQuestionsCount}/{totalQuestions}
       </Text>
-      {allQuestionsAnswered && (
-        <Button style={styles.sendButton} onPress={handleSendAllAnswers} disabled={sendingAnswers}>
-          {sendingAnswers ? 'Enviando...' : 'Enviar Respuestas'}
-        </Button>
-      )}
+
+      {allQuestionsAnswered ? (
+  <>
+    <Button style={styles.sendButton} onPress={handleSendAllAnswers} disabled={sendingAnswers}>
+      {sendingAnswers ? 'Enviando...' : 'Enviar Respuestas'}
+    </Button>
+    
+    <Button
+      style={styles.cameraButton}
+      onPress={() => handleOpenCamera(0)}
+    >
+      Tomar Evidencia
+    </Button>
+  </>
+) : null}
     </View>
   );
 

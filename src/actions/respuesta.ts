@@ -27,10 +27,11 @@ export const createResponse = async (
   respuestas: { numero: number; respuestaSeleccionada: string }[],
   patente: string,
   fecha_respuesta: string,
-  geolocalizacion: { latitud: number; longitud: number }
+  geolocalizacion: { latitud: number; longitud: number },
+  foto:string
 ): Promise<Respuesta> => {
   try {
-    const payload = { respuestas, patente, fecha_respuesta, geolocalizacion };
+    const payload = { respuestas, patente, fecha_respuesta, geolocalizacion,foto };
     const response = await serviceAxiosApi.post(`/v2/respuesta/${userId}/${cuestionarioId}`, payload);
     return response.data; // Retornamos la respuesta creada.
   } catch (error) {

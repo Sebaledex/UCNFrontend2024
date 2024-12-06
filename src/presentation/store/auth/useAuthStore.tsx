@@ -63,10 +63,11 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     const resp = await authRefreshToken(refresh_token);
 
     if (resp) {
+    console.log('user data:', resp.user);
     await AsyncStorage.setItem('token', resp.access_token);
     await AsyncStorage.setItem('refresh_token', resp.refresh_token);
     await AsyncStorage.setItem('access_token', resp.access_token);
-    set({ status: 'authenticated', access_token: resp.access_token, refresh_token: resp.refresh_token });
+    set({ status: 'authenticated', access_token: resp.access_token, refresh_token: resp.refresh_token, user: resp.user });
     return true;
     } else {
       set({ status: 'unauthenticated', access_token: undefined, user: undefined, refresh_token: undefined });
