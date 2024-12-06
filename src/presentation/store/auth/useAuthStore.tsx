@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { User } from "../../../domain/entities/user.entity";
 import { authLogin, authRefreshToken, authSignup } from "../../../actions/auth/auth";
 import { AuthStatus } from "../../../infrastructure/interfaces/auth.status";
-import { StorageAdapter } from "../../../config/adapters/storage-adapter";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface AuthState {
@@ -30,9 +29,9 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       return false;
     }
     console.log("Datos del usuario logueado:", resp.user); // Verifica si la respuesta contiene los datos correctos
-    await StorageAdapter.setItem('refresh_token', resp.refresh_token);
-    await StorageAdapter.setItem('access_token', resp.access_token);
-    await StorageAdapter.setItem('user_id', resp.user.id);
+    await AsyncStorage.setItem('refresh_token', resp.refresh_token);
+    await AsyncStorage.setItem('access_token', resp.access_token);
+    await AsyncStorage.setItem('user_id', resp.user.id);
     set({ status: 'authenticated', access_token: resp.access_token, user: resp.user, refresh_token: resp.refresh_token });
     return true;
   },
@@ -54,7 +53,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   refresh: async () => {
-    const refresh_token = get().refresh_token;
+    const refresh_token = await AsyncStorage.getItem('refresh_token');
     if (!refresh_token) {
       console.log('No refresh token available');
       set({ status: 'unauthenticated', access_token: undefined, user: undefined });
@@ -64,9 +63,9 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     const resp = await authRefreshToken(refresh_token);
 
     if (resp) {
-    await StorageAdapter.setItem('token', resp.access_token);
-    await StorageAdapter.setItem('refresh_token', resp.refresh_token);
-    await StorageAdapter.setItem('access_token', resp.access_token);
+    await AsyncStorage.setItem('token', resp.access_token);
+    await AsyncStorage.setItem('refresh_token', resp.refresh_token);
+    await AsyncStorage.setItem('access_token', resp.access_token);
     set({ status: 'authenticated', access_token: resp.access_token, refresh_token: resp.refresh_token });
     return true;
     } else {

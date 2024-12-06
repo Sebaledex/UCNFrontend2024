@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
-export class StorageAdapter {
+export class AsyncStorage {
 
     static async getItem(key: string): Promise<string | null> {
       try {
