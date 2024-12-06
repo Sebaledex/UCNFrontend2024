@@ -1,34 +1,47 @@
 import React from 'react';
 import { Layout, Text, Card, Button, Avatar } from '@ui-kitten/components';
 import { StyleSheet, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // Para la navegación
+import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
 import { RootStackParams } from '../../navigation/StackNavigator';
+import { useAuthStore } from '../../store/auth/useAuthStore'; // Importa tu store de autenticación
 
 export const UserProfileScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParams>>();
+  const { user } = useAuthStore(); // Obtén el usuario desde el store
 
   const handleBackToHome = () => {
-    navigation.navigate('HomeScreen'); // Ahora la navegación debe funcionar correctamente
+    navigation.navigate('HomeScreen');
   };
+
+  // Manejar el caso en que no haya usuario cargado
+  if (!user) {
+    return (
+      <Layout style={styles.centered}>
+        <Text category="h5" style={styles.loadingText}>
+          Cargando datos del usuario...
+        </Text>
+      </Layout>
+    );
+  }
 
   return (
     <Layout style={styles.container}>
       <View style={styles.profileHeader}>
-        <Avatar source={{ uri: 'https://www.w3schools.com/w3images/avatar2.png' }} size="giant" />
-        <Text category="h5" style={styles.name}>Juan Pérez</Text>
-        <Text category="s1" style={styles.username}>@juanperez</Text>
+      <Avatar source={{ uri: 'https://www.w3schools.com/w3images/avatar2.png' }} size="giant" />
+        <Text category="h5" style={styles.name}>{user.name}</Text>
+        <Text category="s1" style={styles.username}>@{user.username}</Text>
       </View>
-      
+
       <Card style={styles.card}>
         <Text style={styles.title}>Información del Usuario</Text>
         <View style={styles.infoContainer}>
           <Text style={styles.label}>Correo Electrónico:</Text>
-          <Text style={styles.value}>juan.perez@email.com</Text>
+          <Text style={styles.value}>{user.email}</Text>
         </View>
         <View style={styles.infoContainer}>
           <Text style={styles.label}>Área:</Text>
-          <Text style={styles.value}>Marketing</Text>
+          <Text style={styles.value}>{user.area || 'Sin área asignada'}</Text>
         </View>
       </Card>
 
@@ -100,6 +113,15 @@ const styles = StyleSheet.create({
   backButton: {
     marginTop: 16,
     borderRadius: 8,
-    backgroundColor: '#3498db', // Color azul para el botón
+    backgroundColor: '#3498db',
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
