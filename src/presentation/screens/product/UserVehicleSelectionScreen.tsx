@@ -36,8 +36,7 @@ export const UserVehicleSelectionScreen = () => {
         .filter((machine) => machine.area === user.area)
         .sort((a, b) => a.patente.localeCompare(b.patente))
     : [];
-    console.log("Máquinas filtradas:", filteredMachines);
-
+  
   useEffect(() => {
     fetchAllMachines();
   }, []);
@@ -50,23 +49,16 @@ export const UserVehicleSelectionScreen = () => {
   const handleConfirmSelection = () => {
     const { id } = route.params; // ID del cuestionario
     const machinePatente = selectedMachine?.patente || "unknown"; // Patente de la máquina
-  
-    // Log de las variables
-    console.log("Navegando con los parámetros:");
-    console.log("ID del cuestionario:", id || "unknown");
-    console.log("Patente de la máquina:", machinePatente);
-    console.log("ID del usuario:", user?.id || "unknown");
-  
-    // Navegación a la pantalla de detalles
+
     navigation.navigate("QuestionDetailScreen", {
-      id: id || "unknown", // ID del cuestionario
+      id: id || "unknown",
       machinePatente,
-      userId: user?.id || "unknown", // ID del usuario
+      userId: user?.id || "unknown",
     });
-  
+
     setModalVisible(false);
   };
-  
+
   const renderMachineItem = ({ item }: { item: Machine }) => (
     <Card
       style={styles.machineCard}
@@ -182,10 +174,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-  },
-  scrollView: {
-    flexGrow: 1,
-    marginBottom: 100,
   },
   header: {
     backgroundColor: "#1F4A6F",
