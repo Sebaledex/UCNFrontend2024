@@ -151,7 +151,7 @@ export const QuestionDetailScreen = () => {
       }
   
       // Enviar respuestas al store
-      console.log('aca estan las imagenes:', questionImages);
+      //console.log('aca estan las imagenes:', questionImages);
       await submitResponse(user.id, id, respuestas, machinePatente, fecha_respuesta, geolocalizacion);
   
       Alert.alert('Éxito', 'Todas las respuestas se enviaron correctamente');
