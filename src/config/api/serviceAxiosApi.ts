@@ -8,8 +8,8 @@ console.log('API_URL_ANDROID', process.env.API_URL_ANDROID);
 
 
 const serviceAxiosApi = axios.create({ 
-  // baseURL: `${PROD_URL}`,
-  baseURL: `${process.env.API_URL}`, //ahora se puede cambiar la url dependiendo del .env
+  baseURL: `${PROD_URL}`, // uno de estos debe funcionar xd
+  //baseURL: `${process.env.API_URL}`, //ahora se puede cambiar la url dependiendo del .env
   headers: {
     'Content-Type': 'application/json',
   }
